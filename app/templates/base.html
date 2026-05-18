@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#059669" />
+  <title>{% block title %}FilaZero{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card { box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+  <header class="bg-emerald-600 text-white shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <span class="text-2xl">🍽️</span>
+        <div>
+          <h1 class="text-lg font-bold leading-tight">FilaZero</h1>
+          <p class="text-xs text-emerald-100">Almoço Comunitário</p>
+        </div>
+      </a>
+      <nav class="text-sm flex items-center gap-4">
+        {% if request.session.get('logado') %}
+          <a href="/cozinha" class="hover:underline">Cozinha</a>
+          <a href="/admin" class="hover:underline">Relatórios</a>
+          <a href="/logout" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md">Sair</a>
+        {% else %}
+          <a href="/login" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md">Equipe</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center text-xs text-slate-400 py-6">
+    FilaZero · Projeto de Extensão · Engenharia de Software
+  </footer>
+</body>
+</html>

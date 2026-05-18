@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Painel da Cozinha · FilaZero{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <div class="flex items-center justify-between flex-wrap gap-2">
+    <div>
+      <h2 class="text-2xl font-bold">Painel da Cozinha</h2>
+      <p class="text-sm text-slate-500">{{ total }} {% if total == 1 %}pedido hoje{% else %}pedidos hoje{% endif %}</p>
+    </div>
+    <button onclick="location.reload()"
+            class="text-sm bg-white border border-slate-300 hover:bg-slate-50 px-3 py-2 rounded-md">
+      🔄 Atualizar
+    </button>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+  <!-- Aguardando -->
+  <div class="bg-amber-50 rounded-xl p-3 border-2 border-amber-200">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <h3 class="font-bold text-amber-900">⏱️ Aguardando</h3>
+      <span class="bg-amber-200 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-full">{{ aguardando|length }}</span>
+    </div>
+    <div class="space-y-2">
+      {% for p in aguardando %}
+        {% include "_card_pedido.html" %}
+      {% else %}
+        <p class="text-xs text-amber-700 text-center py-4">Nenhum aguardando</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Preparando -->
+  <div class="bg-blue-50 rounded-xl p-3 border-2 border-blue-200">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <h3 class="font-bold text-blue-900">👨‍🍳 Preparando</h3>
+      <span class="bg-blue-200 text-blue-900 text-xs font-bold px-2 py-0.5 rounded-full">{{ preparando|length }}</span>
+    </div>
+    <div class="space-y-2">
+      {% for p in preparando %}
+        {% include "_card_pedido.html" %}
+      {% else %}
+        <p class="text-xs text-blue-700 text-center py-4">Nenhum preparando</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Pronto -->
+  <div class="bg-emerald-50 rounded-xl p-3 border-2 border-emerald-200">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <h3 class="font-bold text-emerald-900">✅ Pronto</h3>
+      <span class="bg-emerald-200 text-emerald-900 text-xs font-bold px-2 py-0.5 rounded-full">{{ pronto|length }}</span>
+    </div>
+    <div class="space-y-2">
+      {% for p in pronto %}
+        {% include "_card_pedido.html" %}
+      {% else %}
+        <p class="text-xs text-emerald-700 text-center py-4">Nenhum pronto</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Entregue -->
+  <div class="bg-slate-100 rounded-xl p-3 border-2 border-slate-200">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <h3 class="font-bold text-slate-700">📦 Entregue</h3>
+      <span class="bg-slate-300 text-slate-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ entregue|length }}</span>
+    </div>
+    <div class="space-y-2">
+      {% for p in entregue %}
+        {% include "_card_pedido.html" %}
+      {% else %}
+        <p class="text-xs text-slate-500 text-center py-4">Nenhum entregue ainda</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Auto-refresh do painel a cada 15s
+  setTimeout(() => location.reload(), 15000);
+</script>
+{% endblock %}

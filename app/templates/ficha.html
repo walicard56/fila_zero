@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Ficha {{ pedido.senha }} · FilaZero{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto">
+
+  <div id="ficha" class="bg-white rounded-2xl card overflow-hidden">
+    <div id="cabecalho" class="px-6 py-4 text-center transition-colors
+      {% if pedido.status.value == 'pronto' %}bg-emerald-600 text-white
+      {% elif pedido.status.value == 'preparando' %}bg-blue-600 text-white
+      {% elif pedido.status.value == 'entregue' %}bg-slate-600 text-white
+      {% elif pedido.status.value == 'cancelado' %}bg-rose-600 text-white
+      {% else %}bg-amber-500 text-white{% endif %}">
+      <p class="text-xs uppercase tracking-wider opacity-80">Sua senha</p>
+      <p class="text-6xl font-black tracking-wider mt-1">{{ pedido.senha }}</p>
+    </div>
+
+    <div class="p-6 space-y-4">
+      <div class="text-center">
+        <p class="text-sm text-slate-500">Status atual</p>
+        <p id="status-label" class="text-2xl font-bold mt-1">{{ pedido.status_label() }}</p>
+      </div>
+
+      {% if pedido.status.value in ['aguardando', 'preparando'] %}
+      <div class="bg-slate-50 rounded-lg p-4 text-center">
+        <p class="text-xs text-slate-500 uppercase tracking-wide">Posição na fila</p>
+        <p class="text-3xl font-bold text-slate-800">{{ posicao }}º</p>
+      </div>
+      {% endif %}
+
+      {% if pedido.status.value == 'pronto' %}
+      <div class="bg-emerald-50 border-2 border-emerald-300 rounded-lg p-4 text-center animate-pulse">
+        <p class="text-2xl">🎉</p>
+        <p class="font-semibold text-emerald-800">Sua marmita está pronta!</p>
+        <p class="text-sm text-emerald-700 mt-1">Pode ir retirar — pague R$ 1,00 no local.</p>
+      </div>
+      {% endif %}
+
+      <hr class="border-slate-200" />
+
+      <div class="text-sm text-slate-600 space-y-1">
+        <p><span class="font-medium">Nome:</span> {{ pedido.nome }}</p>
+        {% if pedido.telefone %}<p><span class="font-medium">Telefone:</span> {{ pedido.telefone }}</p>{% endif %}
+        {% if pedido.observacao %}<p><span class="font-medium">Observação:</span> {{ pedido.observacao }}</p>{% endif %}
+        <p class="text-xs text-slate-400 pt-2">Pedido feito às {{ pedido.criado_em.strftime('%H:%M') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4 space-y-2">
+    <p class="text-xs text-slate-500">Esta página atualiza automaticamente.</p>
+    <a href="/" class="inline-block text-sm text-emerald-700 hover:underline">← Fazer outro pedido</a>
+  </div>
+</div>
+
+<script>
+  // Atualiza status a cada 8 segundos sem recarregar a página
+  const senha = "{{ pedido.senha }}";
+  let statusAtual = "{{ pedido.status.value }}";
+
+  async function atualizar() {
+    try {
+      const r = await fetch(`/api/status/${senha}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (data.status !== statusAtual) {
+        // Recarrega a página para refletir cores/blocos completos
+        window.location.reload();
+      }
+    } catch (e) { /* offline tudo bem */ }
+  }
+
+  setInterval(atualizar, 8000);
+</script>
+{% endblock %}

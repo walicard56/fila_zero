@@ -1,0 +1,35 @@
+<div class="bg-white rounded-lg p-3 shadow-sm">
+  <div class="flex items-center justify-between mb-1">
+    <span class="text-xl font-black tracking-wider">{{ p.senha }}</span>
+    <span class="text-xs text-slate-400">{{ p.criado_em.strftime('%H:%M') }}</span>
+  </div>
+  <p class="text-sm font-medium text-slate-700 truncate">{{ p.nome }}</p>
+  {% if p.observacao %}
+    <p class="text-xs text-slate-500 mt-1 italic">"{{ p.observacao }}"</p>
+  {% endif %}
+  <div class="flex gap-1 mt-2">
+    {% if p.status.value == 'aguardando' %}
+      <form action="/cozinha/avancar/{{ p.id }}" method="post" class="flex-1">
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-1.5 rounded">
+          ▶️ Preparar
+        </button>
+      </form>
+      <form action="/cozinha/cancelar/{{ p.id }}" method="post"
+            onsubmit="return confirm('Cancelar este pedido?')">
+        <button class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs px-2 py-1.5 rounded">✕</button>
+      </form>
+    {% elif p.status.value == 'preparando' %}
+      <form action="/cozinha/avancar/{{ p.id }}" method="post" class="flex-1">
+        <button class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-1.5 rounded">
+          ✅ Marcar como pronto
+        </button>
+      </form>
+    {% elif p.status.value == 'pronto' %}
+      <form action="/cozinha/avancar/{{ p.id }}" method="post" class="flex-1">
+        <button class="w-full bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold py-1.5 rounded">
+          📦 Confirmar entrega
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
