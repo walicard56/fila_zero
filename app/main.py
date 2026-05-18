@@ -24,9 +24,13 @@ app = FastAPI(title="FilaZero", description="Sistema de pedidos para almoço com
 SECRET = os.getenv("SECRET_KEY", "filazero-dev-secret-change-in-prod")
 app.add_middleware(SessionMiddleware, secret_key=SECRET)
 
-# Estáticos — cria a pasta se não existir (Render não commita pastas vazias)
-from pathlib import Path
-STATIC_DIR = Path(__file__).parent / "static"
+# Diretórios base do projeto (resolve corretamente em deploys)
+BASE_DIR = Path(__file__).resolve().parent.parent
+# Preferir `static`/`templates` na raiz do projeto (útil em deploys);
+# caso contrário, usar as pastas dentro de `app/`.
+STATIC_DIR = (BASE_DIR / "static") if (BASE_DIR / "static").exists() else (Path(__file__).resolve().parent / "static")
+TEMPLATES_DIR = (BASE_DIR / "templates") if (BASE_DIR / "templates").exists() else (Path(__file__).resolve().parent / "templates")
+# Garantir existência da pasta estática (se vazio, alguns providers não committam)
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
