@@ -3,6 +3,7 @@
 Aplicação principal FastAPI.
 """
 import os
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
@@ -23,8 +24,15 @@ app = FastAPI(title="FilaZero", description="Sistema de pedidos para almoço com
 SECRET = os.getenv("SECRET_KEY", "filazero-dev-secret-change-in-prod")
 app.add_middleware(SessionMiddleware, secret_key=SECRET)
 
+# Diretórios base do projeto (resolve corretamente em deploys)
+BASE_DIR = Path(__file__).resolve().parent.parent
+# Prefer root-level `static`/`templates` (useful if project root contains them),
+# otherwise fall back to `app/static` and `app/templates`.
+STATIC_DIR = (BASE_DIR / "static") if (BASE_DIR / "static").exists() else (Path(__file__).resolve().parent / "static")
+TEMPLATES_DIR = (BASE_DIR / "templates") if (BASE_DIR / "templates").exists() else (Path(__file__).resolve().parent / "templates")
+
 # Estáticos
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Routers
 app.include_router(cliente.router)
@@ -41,7 +49,7 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
     # Página 404 amigável
     if exc.status_code == 404:
         from fastapi.templating import Jinja2Templates
-        templates = Jinja2Templates(directory="app/templates")
+        templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
         return templates.TemplateResponse(
             "404.html",
             {"request": request, "mensagem": exc.detail},
